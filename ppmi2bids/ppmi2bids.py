@@ -1,11 +1,30 @@
-# Convert the PPMI database to the BIDS format.
+"""
+Convert the PPMI database to the BIDS format.
 
-# We will iterate through each subject, creating a subject directory in the BIDS directory. The 'anat' and 'func' subdirectories will be created. Then, we will iterate through each scan type. The name of the scan description, as extracted from the XML metadata file, will be the acquisition (acq-)label. Within each scan type, we will iterate through the existing files (using the find utility to acquire a list of files) and construct arrays corresponding to T1, T2, PD, and Flair scan types. All files containing 'flair' in the file name should be categorized as Flair; all other files should be categorized according to the weighting as specified in the metadata file. The arrays only need to consist of the original file paths since the new files are named according to the BIDS naming scheme. Ensure that the files are traversed in sorted order. After all files are processed, we will create the new files from the array. Arrays that contain more than one element will be named with a run index.
+We will iterate through each subject, creating a subject directory in the BIDS directory.
+The 'anat' and 'func' subdirectories will be created. Then, we will iterate through each
+scan type. The name of the scan description, as extracted from the XML metadata file, will
+be the acquisition (acq-)label. Within each scan type, we will iterate through the existing
+files (using the find utility to acquire a list of files) and construct arrays corresponding
+to T1, T2, PD, and Flair scan types. All files containing 'flair' in the file name should be
+categorized as Flair; all other files should be categorized according to the weighting as
+specified in the metadata file. The arrays only need to consist of the original file paths
+since the new files are named according to the BIDS naming scheme. Ensure that the files are
+traversed in sorted order. After all files are processed, we will create the new files from
+the array. Arrays that contain more than one element will be named with a run index.
 
-# There are three types of processed scans: T1-anatomical, T2 in T1-anatomical space, and T2 in corrected EPI space. The processed scan type can be determined by the 'processedDataLabel' metadata parameter. For T1-anatomical and T2 in corrected EPI space, the weighting (of the original image) can be determined by the metadata file. T2 in T1-anatomical scans are derived from two images, so there will be two weighting parameters in the metadatafile. They should be labelled as 'inplaneT1' (tentatively).
-# EDIT: Use file names to determine processed scans, as there are inconsistencies in the metadata files.
+There are three types of processed scans: T1-anatomical, T2 in T1-anatomical space, and T2 in
+corrected EPI space. The processed scan type can be determined by the 'processedDataLabel'
+metadata parameter. For T1-anatomical and T2 in corrected EPI space, the weighting (of the
+original image) can be determined by the metadata file. T2 in T1-anatomical scans are derived
+from two images, so there will be two weighting parameters in the metadatafile. They should be
+labelled as 'inplaneT1' (tentatively).
 
-# There are two types of functional scans: ep2d_bold_rest, ep2d_RESTING_STATE. Using file names, we can determine if a scan is functional (don't use the metadata file, as there are inconsistencies).
+EDIT: Use file names to determine processed scans, as there are inconsistencies in the metadata files.
+
+There are two types of functional scans: ep2d_bold_rest, ep2d_RESTING_STATE. Using file names, we can
+determine if a scan is functional (don't use the metadata file, as there are inconsistencies).
+"""
 
 import os, fnmatch, shutil, re, csv
 
